@@ -1,26 +1,35 @@
+/*Básicamente, el código obtiene los datos de la API FakeStore, crea un HTML 
+por cada producto obtenido, y los inserta dentro de un 
+elemento HTML en la página web.*/
+
 // Definimos la URL de la API que vamos a utilizar.
-const API_URL = "https://jsonplaceholder.typicode.com";
+const url = "https://fakestoreapi.com";
+
+// Seleccionamos el elemento HTML donde vamos a insertar la información.
+const contenedorHtml = document.querySelector("#productos");
 
 // Función que se encarga de generar el HTML a partir de los datos recibidos.
-function manejoDePeticiones(datos) {
-  // Seleccionamos el elemento HTML donde vamos a insertar la información.
-  const generarHTML = document.querySelector("#productos");
-
+const traerDatos = datos => {
   // Creamos un componente HTML por cada elemento recibido en los datos.
-  const componenteHTML = datos.map(photo => `
-    <li>ID = ${photo.id}, Titulo = ${photo.title}, URL = ${photo.url}</li>
-    <img class="img_prod" src="${photo.url}"></img>
-    <h4>ID: ${photo.id}</h4>
-    <h2>${photo.title}</h2>
-    <p class="description">${photo.title} ${photo.title} ${photo.title}</p>
+  const productoHTML = datos.map(producto => `
+    <div class="card">
+      <img src="${producto.image}" alt="${producto.title}">
+      <div class="card-body">
+        <h5 class="card-title">${producto.title}</h5>
+        <p class="card-text">${producto.description}</p>
+        <p class="card-text">Category: ${producto.category}</p>
+        <p class="card-text">Price: ${producto.price}</p>
+        <p class="card-text">Rating: ${producto.rating}</p>
+      </div>
+    </div>
   `);
 
   // Insertamos los componentes HTML generados dentro del elemento HTML seleccionado.
-  generarHTML.innerHTML = `<ul>${componenteHTML}</ul>`;
-}
+  contenedorHtml.innerHTML = productoHTML.join("");
+};
 
 // Realizamos una solicitud a la API utilizando la función fetch().
-fetch(`${API_URL}/photos`)
+fetch(`${url}/products`)
   .then(response => {
     // Verificamos si la respuesta es exitosa.
     if (!response.ok) {
@@ -30,10 +39,9 @@ fetch(`${API_URL}/photos`)
     // Convertimos la respuesta en un objeto JSON.
     return response.json();
   })
-  .then(data => manejoDePeticiones(data)) // Llamamos a la función manejoDePeticiones() para generar el HTML.
+  .then(traerDatos) // Llamamos a la función traerDatos() para generar el HTML.
   .catch(error => {
     // En caso de error, mostramos un mensaje en la página.
     console.error(error);
-    const generarHTML = document.querySelector("#productos");
-    generarHTML.innerHTML = `<p>No se pudo obtener la información de la API.</p>`;
+    contenedorHtml.innerHTML = "<p>No se pudo obtener la información de la API.</p>";
   });
